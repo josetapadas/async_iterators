@@ -49,3 +49,81 @@ const rangedIterableSource: RangedIterable = {
 for (const element of rangedIterableSource) {
   console.log(element); // 1, 2, 3
 }
+
+// Sample generator function
+function* sequenceGenerator() {
+	yield 1;
+	yield 2;
+  yield 3;
+}
+
+console.log(sequenceGenerator().next()) // { value: 1, done: false }
+
+const sequence = sequenceGenerator();
+
+for(const element of sequence) {
+  console.log(element)  // 1, 2, 3
+}
+
+// Custom iterable but with generators
+const rangedIterableGeneratorSource = {
+  start: 1,
+  end: 3,
+
+  *[Symbol.iterator]() {
+    for(let current = this.start; current <= this.end; current++) {
+      yield current;
+    }
+  }
+};
+
+for (const element of rangedIterableGeneratorSource) {
+  console.log(element) // 1, 2, 3
+}
+
+// Asynchronous iterable interface
+interface AsynchronousIterable<T> {
+  [Symbol.asyncIterator](): AsynchronousIterator<T>;
+}
+
+interface AsynchronousIterator<T> {
+  next(): Promise<AsynchronousIteratorResult<T>>;
+}
+
+interface AsynchronousIteratorResult<T> {
+  value: T | undefined;
+  done: boolean;
+}
+
+// Custom asynchronous iterable
+interface AsynchronousRangedIterable extends AsynchronousIterable<number> {
+  start: number;
+  end: number;
+}
+
+const rangedIterableAsynchronousSource: AsynchronousRangedIterable = {
+  start: 1,
+  end: 3,
+
+  [Symbol.asyncIterator]() {
+    return {
+      next: async () => {
+
+        // a sample asynchronicity
+        await new Promise(resolve => setTimeout(resolve, 100));
+
+        return this.start <= this.end
+          ? { done: false, value: this.start++ }
+          : { done: true, value: undefined };
+      },
+    };
+  },
+};
+
+const sampleAsynchronousIteration = async () => {
+  for await (const element of rangedIterableAsynchronousSource) {
+    console.log(element);
+  }
+}
+
+sampleAsynchronousIteration() // 1, 2, 3
