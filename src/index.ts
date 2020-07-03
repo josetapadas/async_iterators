@@ -1,4 +1,4 @@
-// synchronous iterable interface
+// Synchronous iterable interface
 interface SynchronousIterable<T> {
   [Symbol.iterator](): SynchronousIterator<T>;
 }
@@ -12,22 +12,20 @@ interface SynchronousIteratorResult<T> {
   done: boolean;
 }
 
-console.log("*** manual iteration over a simple array:")
-
+// Manual iteration over an Array object
 const iterableSource = [1, 2, 3];
 const synchronousIterator = iterableSource[Symbol.iterator]();
 
-console.log(synchronousIterator.next());
-console.log(synchronousIterator.next());
-console.log(synchronousIterator.next());
-console.log(synchronousIterator.next());
+console.log(synchronousIterator.next());  // { value: 1, done: false }
+console.log(synchronousIterator.next());  // { value: 2, done: false }
+console.log(synchronousIterator.next());  // { value: 3, done: false }
+console.log(synchronousIterator.next());  // { value: undefined, done: true }
 
 for (const element of iterableSource) {
-  console.log(element);
+  console.log(element); // 1, 2, 3
 }
 
-console.log("\n*** custom iterable object:")
-
+// Custom iterable object
 interface RangedIterable extends SynchronousIterable<number> {
   start: number;
   end: number;
@@ -49,5 +47,5 @@ const rangedIterableSource: RangedIterable = {
 };
 
 for (const element of rangedIterableSource) {
-  console.log(element);
+  console.log(element); // 1, 2, 3
 }
